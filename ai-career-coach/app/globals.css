@@ -3,20 +3,96 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* "Disha AI" Theme Variables - Forcing Dark Mode visuals by default */
+    --background: 250 100% 4%; /* #030014 - Deep Purple/Black */
+    --foreground: 0 0% 100%;   /* White text */
+    
+    --card: 252 61% 11%;       /* #120b2e - Dark Purple Card */
+    --card-foreground: 0 0% 100%;
+    
+    --popover: 252 61% 11%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 258 90% 66%;    /* #8B5CF6 - Vivid Purple */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 263 70% 50%;  /* #4c1d95 - Darker Purple */
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 244 47% 20%;      /* #1e1b4b - Muted Blue/Purple */
+    --muted-foreground: 215 20% 65%;
+    
+    --accent: 199 89% 48%;     /* #0EA5E9 - Electric Blue */
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 249 50% 28%;     /* #2e236b - Purple Borders */
+    --input: 244 47% 20%;
+    --ring: 258 90% 66%;
+    
+    --radius: 0.75rem;         /* Slightly softer corners */
+    
+    /* Chart Colors (can be tweaked later if needed) */
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  /* Since we want the app to be dark always, we map .dark to the same values just in case */
+  .dark {
+    --background: 250 100% 4%;
+    --foreground: 0 0% 100%;
+    --card: 252 61% 11%;
+    --card-foreground: 0 0% 100%;
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
+    /* ... rest are inherited */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
   body {
     @apply bg-background text-foreground;
-    /* This creates the subtle grid seen in your inspiration, but darker */
-    background-image: linear-gradient(to right, #1f1f1f 1px, transparent 1px),
-    linear-gradient(to bottom, #1f1f1f 1px, transparent 1px);
+    /* The Grid Background */
+    background-image: linear-gradient(to right, #2a2a2a 1px, transparent 1px),
+    linear-gradient(to bottom, #2a2a2a 1px, transparent 1px);
     background-size: 50px 50px;
-    /* Fade the grid out so it's not too harsh */
+    /* Vignette effect to fade edges to black */
     mask-image: radial-gradient(ellipse at center, black 40%, transparent 100%);
   }
 }
 
-/* Glassmorphism utility for your "Bento" cards */
 @layer utilities {
-  .glass-card {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
+  /* New Gradient Title: Crisp white to soft purple */
+  .gradient-title {
+    @apply font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-purple-400 pb-2 pr-2;
   }
+
+  /* Glassmorphism Card Utility */
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-xl;
+  }
+}
+
+/* Preserving your original Hero Animations */
+.hero-image-wrapper {
+  perspective: 1000px;
+}
+
+.hero-image {
+  transform: rotateX(15deg) scale(1);
+  transition: transform 0.5s ease-out;
+  will-change: transform;
+}
+
+.hero-image.scrolled {
+  transform: rotateX(0deg) scale(1) translateY(40px);
 }
