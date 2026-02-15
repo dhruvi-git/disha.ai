@@ -5,6 +5,9 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { generateAIInsights } from "./dashboard";
 
+/* ============================
+   UPDATE USER PROFILE
+============================ */
 export async function updateUser(data) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
@@ -21,46 +24,59 @@ export async function updateUser(data) {
         ? data.skills.split(",").map((skill) => skill.trim())
         : data.skills;
 
-    const result = await db.$transaction(
-      async (tx) => {
-        // Check if industry insight exists
-        let industryInsight = await tx.industryInsight.findUnique({
-          where: { industry: data.industry },
-        });
+    const result = await db.$transaction(async (tx) => {
+      let industryInsight = await tx.industryInsight.findUnique({
+        where: { industry: data.industry },
+      });
 
-        if (!industryInsight) {
-          const insights = await generateAIInsights(data.industry);
+      if (!industryInsight) {
+        const insights = await generateAIInsights(data.industry);
 
-          industryInsight = await tx.industryInsight.create({
-            data: {
-              industry: data.industry,
-              ...insights,
-              nextUpdate: new Date(
-                Date.now() + 7 * 24 * 60 * 60 * 1000
-              ),
-            },
-          });
-        }
-
-        // Update user
-        const updatedUser = await tx.user.update({
-          where: { id: user.id },
+        industryInsight = await tx.industryInsight.create({
           data: {
             industry: data.industry,
-            experience: parseInt(data.experience, 10),
-            bio: data.bio,
-            skills: skillsArray,
+            ...insights,
+            nextUpdate: new Date(
+              Date.now() + 7 * 24 * 60 * 60 * 1000
+            ),
           },
         });
-
-        return { updatedUser, industryInsight };
       }
-    );
+
+      const updatedUser = await tx.user.update({
+        where: { id: user.id },
+        data: {
+          industry: data.industry,
+          experience: parseInt(data.experience, 10),
+          bio: data.bio,
+          skills: skillsArray,
+        },
+      });
+
+      return { updatedUser, industryInsight };
+    });
 
     revalidatePath("/");
     return result.updatedUser;
   } catch (error) {
-    console.error("Error updating user and industry:", error);
+    console.error("Error updating user:", error);
     throw new Error("Failed to update profile");
   }
+}
+
+/* ============================
+   CHECK ONBOARDING STATUS
+============================ */
+export async function getUserOnboardingStatus() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+    select: { industry: true },
+  });
+
+  return {
+    isOnboarded: !!user?.industry,
+  };
 }
