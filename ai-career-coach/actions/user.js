@@ -30,7 +30,25 @@ export async function updateUser(data) {
       });
 
       if (!industryInsight) {
-        const insights = await generateAIInsights(data.industry);
+        let insights;
+
+        try {
+          // Try AI generation
+          insights = await generateAIInsights(data.industry);
+        } catch (err) {
+          console.error("AI failed, using fallback:", err.message);
+
+          // Fallback default values
+          insights = {
+            salaryRanges: [],
+            growthRate: 0,
+            demandLevel: "Medium",
+            topSkills: [],
+            marketOutlook: "Neutral",
+            keyTrends: [],
+            recommendedSkills: [],
+          };
+        }
 
         industryInsight = await tx.industryInsight.create({
           data: {
@@ -62,21 +80,4 @@ export async function updateUser(data) {
     console.error("Error updating user:", error);
     throw new Error("Failed to update profile");
   }
-}
-
-/* ============================
-   CHECK ONBOARDING STATUS
-============================ */
-export async function getUserOnboardingStatus() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const user = await db.user.findUnique({
-    where: { clerkUserId: userId },
-    select: { industry: true },
-  });
-
-  return {
-    isOnboarded: !!user?.industry,
-  };
 }
