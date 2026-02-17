@@ -6,6 +6,38 @@ import { revalidatePath } from "next/cache";
 import { generateAIInsights } from "./dashboard";
 
 /* ============================
+   GET USER ONBOARDING STATUS
+============================ */
+export async function getUserOnboardingStatus() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+  });
+
+  if (!user) {
+    return {
+      isOnboarded: false,
+      user: null,
+    };
+  }
+
+  // Adjust this logic based on your Prisma schema
+  const isOnboarded =
+    !!user.industry &&
+    user.experience !== null &&
+    !!user.bio &&
+    Array.isArray(user.skills) &&
+    user.skills.length > 0;
+
+  return {
+    isOnboarded,
+    user,
+  };
+}
+
+/* ============================
    UPDATE USER PROFILE
 ============================ */
 export async function updateUser(data) {
@@ -75,6 +107,8 @@ export async function updateUser(data) {
     });
 
     revalidatePath("/");
+    revalidatePath("/dashboard");
+
     return result.updatedUser;
   } catch (error) {
     console.error("Error updating user:", error);
