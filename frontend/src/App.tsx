@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
+
 import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import DashboardLayout from "./components/DashboardLayout";
@@ -25,9 +27,33 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Public Landing Page */}
           <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
+
+          {/* Clerk Auth Routes */}
+          <Route
+            path="/sign-in/*"
+            element={<AuthPage mode="sign-in" />}
+          />
+          <Route
+            path="/sign-up/*"
+            element={<AuthPage mode="sign-up" />}
+          />
+
+          {/* Protected Dashboard */}
+          <Route
+            path="/dashboard"
+            element={
+              <>
+                <SignedIn>
+                  <DashboardLayout />
+                </SignedIn>
+                <SignedOut>
+                  <RedirectToSignIn redirectUrl="/dashboard" />
+                </SignedOut>
+              </>
+            }
+          >
             <Route index element={<DashboardHome />} />
             <Route path="chat" element={<ChatPage />} />
             <Route path="interview" element={<InterviewPage />} />
@@ -37,6 +63,8 @@ const App = () => (
             <Route path="jobs" element={<JobFinderPage />} />
             <Route path="profile" element={<ProfilePage />} />
           </Route>
+
+          {/* Fallback */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
