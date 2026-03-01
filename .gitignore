@@ -30,7 +30,3 @@ dist-ssr
 .env.test.local
 .env.production.local
 
-# Python virtual environment
-venv
-.venv
-/env
