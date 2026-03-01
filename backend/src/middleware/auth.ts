@@ -21,11 +21,13 @@ export const requireAuth = async (
 
     const payload = await verifyToken(token, {
       secretKey: process.env.CLERK_SECRET_KEY!,
+      issuer: process.env.CLERK_ISSUER!, // 👈 THIS IS REQUIRED NOW
     });
 
     req.userId = payload.sub;
     next();
   } catch (error) {
+    console.error(error);
     return res.status(401).json({ message: "Unauthorized" });
   }
 };
