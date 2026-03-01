@@ -1,0 +1,18 @@
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: *
+<<<<<<< HEAD
+Allow: /
+=======
+Allow: /
+>>>>>>> 87fa2261a5ed4edc53de42ccbc489649da62a568
