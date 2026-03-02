@@ -20,56 +20,51 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public Landing Page */}
-          <Route path="/" element={<Index />} />
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Public Landing Page */}
+            <Route path="/" element={<Index />} />
 
-          {/* Clerk Auth Routes */}
-          <Route
-            path="/sign-in/*"
-            element={<AuthPage mode="sign-in" />}
-          />
-          <Route
-            path="/sign-up/*"
-            element={<AuthPage mode="sign-up" />}
-          />
+            {/* Clerk Auth Route */}
+            <Route path="/auth/*" element={<AuthPage />} />
 
-          {/* Protected Dashboard */}
-          <Route
-            path="/dashboard"
-            element={
-              <>
-                <SignedIn>
-                  <DashboardLayout />
-                </SignedIn>
-                <SignedOut>
-                  <RedirectToSignIn redirectUrl="/dashboard" />
-                </SignedOut>
-              </>
-            }
-          >
-            <Route index element={<DashboardHome />} />
-            <Route path="chat" element={<ChatPage />} />
-            <Route path="interview" element={<InterviewPage />} />
-            <Route path="resume" element={<ResumePage />} />
-            <Route path="cover-letter" element={<CoverLetterPage />} />
-            <Route path="roadmap" element={<RoadmapPage />} />
-            <Route path="jobs" element={<JobFinderPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-          </Route>
+            {/* Protected Dashboard */}
+            <Route
+              path="/dashboard/*"
+              element={
+                <>
+                  <SignedIn>
+                    <DashboardLayout />
+                  </SignedIn>
+                  <SignedOut>
+                    <RedirectToSignIn redirectUrl="/dashboard" />
+                  </SignedOut>
+                </>
+              }
+            >
+              <Route index element={<DashboardHome />} />
+              <Route path="chat" element={<ChatPage />} />
+              <Route path="interview" element={<InterviewPage />} />
+              <Route path="resume" element={<ResumePage />} />
+              <Route path="cover-letter" element={<CoverLetterPage />} />
+              <Route path="roadmap" element={<RoadmapPage />} />
+              <Route path="jobs" element={<JobFinderPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+            </Route>
 
-          {/* Fallback */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+            {/* Fallback */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
