@@ -16,17 +16,36 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
-          <Link to="/#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-          <Link to="/#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How It Works</Link>
-          <Link to="/#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</Link>
+          <Link
+            to="/#features"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Features
+          </Link>
+          <Link
+            to="/#how-it-works"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            How It Works
+          </Link>
+          <Link
+            to="/#faq"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            FAQ
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">
-          <Link to="/auth">
-            <Button variant="ghost" size="sm">Sign In</Button>
+          <Link to="/sign-in">
+            <Button variant="ghost" size="sm">
+              Sign In
+            </Button>
           </Link>
-          <Link to="/auth?mode=signup">
-            <Button variant="glow" size="sm">Get Started</Button>
+          <Link to="/sign-up">
+            <Button variant="glow" size="sm">
+              Get Started
+            </Button>
           </Link>
         </div>
       </div>
