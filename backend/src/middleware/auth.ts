@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "@clerk/clerk-sdk-node";
+import { verifyToken } from "@clerk/backend";
 
 export interface AuthRequest extends Request {
   userId?: string;
+  userEmail?: string;
 }
 
 export const requireAuth = async (
@@ -19,15 +20,16 @@ export const requireAuth = async (
 
     const token = authHeader.replace("Bearer ", "");
 
+    // ✅ verify token
     const payload = await verifyToken(token, {
       secretKey: process.env.CLERK_SECRET_KEY!,
-      issuer: process.env.CLERK_ISSUER!, // 👈 THIS IS REQUIRED NOW
     });
 
     req.userId = payload.sub;
+
     next();
   } catch (error) {
-    console.error(error);
+    console.error("Auth error:", error);
     return res.status(401).json({ message: "Unauthorized" });
   }
 };
