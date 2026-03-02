@@ -3,7 +3,6 @@ import { verifyToken } from "@clerk/backend";
 
 export interface AuthRequest extends Request {
   userId?: string;
-  userEmail?: string;
 }
 
 export const requireAuth = async (
@@ -20,7 +19,6 @@ export const requireAuth = async (
 
     const token = authHeader.replace("Bearer ", "");
 
-    // ✅ verify token
     const payload = await verifyToken(token, {
       secretKey: process.env.CLERK_SECRET_KEY!,
     });
