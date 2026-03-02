@@ -32,7 +32,9 @@ const App = () => {
             <Route path="/" element={<Index />} />
 
             {/* Clerk Auth Route */}
-            <Route path="/auth/*" element={<AuthPage />} />
+            {/* Clerk Auth Routes */}
+            <Route path="/sign-in/*" element={<AuthPage />} />
+            <Route path="/sign-up/*" element={<AuthPage />} />
 
             {/* Protected Dashboard */}
             <Route
