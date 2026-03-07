@@ -1,22 +1,24 @@
-import { SignIn, SignUp, useUser } from "@clerk/clerk-react";
-import { useLocation, Navigate } from "react-router-dom";
+import { SignIn, SignUp } from "@clerk/clerk-react";
+import { useLocation } from "react-router-dom";
 
 const AuthPage = () => {
-  const { isSignedIn } = useUser();
   const location = useLocation();
-
-  if (isSignedIn) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   const isSignUp = location.pathname.includes("sign-up");
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       {isSignUp ? (
-        <SignUp routing="path" path="/sign-up" />
+        <SignUp
+          routing="path"
+          path="/sign-up"
+          afterSignUpUrl="/dashboard"
+        />
       ) : (
-        <SignIn routing="path" path="/sign-in" />
+        <SignIn
+          routing="path"
+          path="/sign-in"
+          afterSignInUrl="/dashboard"
+        />
       )}
     </div>
   );
