@@ -3,10 +3,15 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  RedirectToSignIn,
+  SignIn,
+  SignUp,
+} from "@clerk/clerk-react";
 
 import Index from "./pages/Index";
-import AuthPage from "./pages/AuthPage";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
 import ChatPage from "./pages/ChatPage";
@@ -26,15 +31,30 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+
         <BrowserRouter>
           <Routes>
-            {/* Public Landing Page */}
+            {/* Landing */}
             <Route path="/" element={<Index />} />
 
-            {/* Clerk Auth Route */}
-            {/* Clerk Auth Routes */}
-            <Route path="/sign-in/*" element={<AuthPage />} />
-            <Route path="/sign-up/*" element={<AuthPage />} />
+            {/* Clerk Auth */}
+            <Route
+              path="/sign-in/*"
+              element={
+                <div className="flex items-center justify-center min-h-screen">
+                  <SignIn afterSignInUrl="/dashboard" />
+                </div>
+              }
+            />
+
+            <Route
+              path="/sign-up/*"
+              element={
+                <div className="flex items-center justify-center min-h-screen">
+                  <SignUp afterSignUpUrl="/dashboard" />
+                </div>
+              }
+            />
 
             {/* Protected Dashboard */}
             <Route
@@ -44,6 +64,7 @@ const App = () => {
                   <SignedIn>
                     <DashboardLayout />
                   </SignedIn>
+
                   <SignedOut>
                     <RedirectToSignIn redirectUrl="/dashboard" />
                   </SignedOut>
@@ -60,7 +81,6 @@ const App = () => {
               <Route path="profile" element={<ProfilePage />} />
             </Route>
 
-            {/* Fallback */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
