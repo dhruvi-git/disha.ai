@@ -11,19 +11,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/**
- * Health check
- */
 app.get("/", (req, res) => {
   res.send("Backend Running 🚀");
 });
 
-/**
- * Get or create user
- */
 app.get("/me", requireAuth, async (req: AuthRequest, res) => {
   try {
     const clerkId = req.userId!;
+    const email = req.userEmail!;
 
     let user = await prisma.user.findUnique({
       where: { clerkId },
@@ -33,7 +28,7 @@ app.get("/me", requireAuth, async (req: AuthRequest, res) => {
       user = await prisma.user.create({
         data: {
           clerkId,
-          email: "temp@example.com", // we’ll improve this next
+          email,
         },
       });
     }
