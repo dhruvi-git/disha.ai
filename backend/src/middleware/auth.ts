@@ -1,8 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "@clerk/backend";
+import { verifyToken, createClerkClient } from "@clerk/backend";
+
+const clerkClient = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY!,
+});
 
 export interface AuthRequest extends Request {
   userId?: string;
+  userEmail?: string;
 }
 
 export const requireAuth = async (
@@ -23,7 +28,10 @@ export const requireAuth = async (
       secretKey: process.env.CLERK_SECRET_KEY!,
     });
 
-    req.userId = payload.sub;
+    const user = await clerkClient.users.getUser(payload.sub);
+
+    req.userId = user.id;
+    req.userEmail = user.emailAddresses[0]?.emailAddress;
 
     next();
   } catch (error) {
