@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { prisma } from "./lib/prisma";
 import { requireAuth, AuthRequest } from "./middleware/auth";
+import { generateCareerAdvice, refineResumeBullet } from "./services/aiService";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
 
 app.get("/me", requireAuth, async (req: AuthRequest, res) => {
   try {
+
     const clerkId = req.userId!;
     const email = req.userEmail!;
 
@@ -34,16 +36,18 @@ app.get("/me", requireAuth, async (req: AuthRequest, res) => {
     }
 
     res.json(user);
+
   } catch (error) {
+
     console.error("ME route error:", error);
     res.status(500).json({ message: "Server error" });
+
   }
 });
 
-import { generateCareerAdvice } from "./services/aiService";
-
 app.post("/ai/chat", requireAuth, async (req: AuthRequest, res) => {
   try {
+
     const { messages } = req.body;
 
     const clerkId = req.userId!;
@@ -68,8 +72,27 @@ Bio: ${user.profile.bio}
     res.json({ response });
 
   } catch (error) {
+
     console.error("AI error:", error);
     res.status(500).json({ message: "AI request failed" });
+
+  }
+});
+
+app.post("/ai/refine-resume", requireAuth, async (req, res) => {
+  try {
+
+    const { text } = req.body;
+
+    const response = await refineResumeBullet(text);
+
+    res.json({ response });
+
+  } catch (error) {
+
+    console.error(error);
+    res.status(500).json({ error: "Failed to refine resume" });
+
   }
 });
 
@@ -78,5 +101,3 @@ const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-
