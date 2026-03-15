@@ -44,13 +44,17 @@ import { generateCareerAdvice } from "./services/aiService";
 
 app.post("/ai/chat", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const { message } = req.body;
+    const { messages } = req.body;
 
-    const response = await generateCareerAdvice(message);
+    console.log("Chat request received");
+    console.log("Messages:", messages.length);
+
+    const response = await generateCareerAdvice(messages);
 
     res.json({ response });
+
   } catch (error) {
-    console.error("AI error:", error);
+    console.error("❌ AI error:", error);
     res.status(500).json({ message: "AI request failed" });
   }
 });
@@ -61,7 +65,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-app.get("/test-ai", async (req, res) => {
-  const response = await generateCareerAdvice("How do I improve my resume?");
-  res.json({ response });
-});
+
