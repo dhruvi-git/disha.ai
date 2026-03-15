@@ -4,9 +4,10 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-export async function generateCareerAdvice(messages: any[]) {
+export async function generateCareerAdvice(messages: any[], profileContext: string) {
 
   console.log("Sending request to GROQ...");
+  console.log("Model:", "llama-3.1-8b-instant");
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.1-8b-instant",
@@ -14,8 +15,13 @@ export async function generateCareerAdvice(messages: any[]) {
     messages: [
       {
         role: "system",
-        content:
-          "You are Disha AI, an expert AI career coach helping users with resumes, interviews, career planning, job searching, and skill development. Provide structured, clear and actionable advice.",
+        content: `
+You are Disha AI, a personalized AI career coach.
+
+Use the user's profile information to give tailored career advice.
+
+${profileContext}
+        `,
       },
 
       ...messages,
