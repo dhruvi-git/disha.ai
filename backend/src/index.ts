@@ -46,15 +46,29 @@ app.post("/ai/chat", requireAuth, async (req: AuthRequest, res) => {
   try {
     const { messages } = req.body;
 
-    console.log("Chat request received");
-    console.log("Messages:", messages.length);
+    const clerkId = req.userId!;
 
-    const response = await generateCareerAdvice(messages);
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      include: { profile: true },
+    });
+
+    const profileContext = user?.profile
+      ? `
+User Profile:
+Target Role: ${user.profile.targetRole}
+Experience Level: ${user.profile.experienceLevel}
+Skills: ${user.profile.skills?.join(", ")}
+Bio: ${user.profile.bio}
+`
+      : "User profile not set yet.";
+
+    const response = await generateCareerAdvice(messages, profileContext);
 
     res.json({ response });
 
   } catch (error) {
-    console.error("❌ AI error:", error);
+    console.error("AI error:", error);
     res.status(500).json({ message: "AI request failed" });
   }
 });
