@@ -7,7 +7,7 @@ import { useActivityLog } from "@/hooks/use-activity-log";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
+const CHAT_URL = "http://localhost:5000/ai/chat";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -17,76 +17,52 @@ const ChatPage = () => {
   const { logActivity } = useActivityLog();
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   const send = async () => {
     if (!input.trim() || isLoading) return;
-    const userMsg: Msg = { role: "user", content: input.trim() };
-    const allMsgs = [...messages, userMsg];
-    setMessages(allMsgs);
+
+    const userMsg: Msg = {
+      role: "user",
+      content: input.trim(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
     logActivity("chat", "message");
 
-    let assistantSoFar = "";
-
     try {
+      const token = await window.Clerk.session.getToken();
+
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ messages: allMsgs }),
+        body: JSON.stringify({
+          messages: [...messages, userMsg],
+        }),
       });
 
-      if (!resp.ok || !resp.body) {
-        const errData = await resp.json().catch(() => ({}));
-        throw new Error(errData.error || "Failed to get response");
-      }
+      const data = await resp.json();
 
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let textBuffer = "";
+      const aiMsg: Msg = {
+        role: "assistant",
+        content: data.response,
+      };
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) {
-              assistantSoFar += content;
-              setMessages((prev) => {
-                const last = prev[prev.length - 1];
-                if (last?.role === "assistant") {
-                  return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
-                }
-                return [...prev, { role: "assistant", content: assistantSoFar }];
-              });
-            }
-          } catch {
-            textBuffer = line + "\n" + textBuffer;
-            break;
-          }
-        }
-      }
+      setMessages((prev) => [...prev, aiMsg]);
     } catch (e: any) {
-      setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${e.message}` }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `Error: ${e.message}` },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +72,9 @@ const ChatPage = () => {
     <div className="flex flex-col h-[calc(100vh-6rem)]">
       <div className="mb-4">
         <h1 className="font-display text-2xl font-bold">AI Career Coach</h1>
-        <p className="text-sm text-muted-foreground">Ask me anything about your career, interviews, resumes, and more.</p>
+        <p className="text-sm text-muted-foreground">
+          Ask me anything about your career, interviews, resumes, and more.
+        </p>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
@@ -105,6 +83,7 @@ const ChatPage = () => {
             Start a conversation with your AI career coach...
           </div>
         )}
+
         {messages.map((msg, i) => (
           <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
             {msg.role === "assistant" && (
@@ -112,11 +91,14 @@ const ChatPage = () => {
                 <Bot className="h-4 w-4" />
               </div>
             )}
-            <div className={`max-w-[80%] rounded-xl px-4 py-3 text-sm ${
-              msg.role === "user"
-                ? "bg-primary text-primary-foreground"
-                : "glass-card"
-            }`}>
+
+            <div
+              className={`max-w-[80%] rounded-xl px-4 py-3 text-sm ${
+                msg.role === "user"
+                  ? "bg-primary text-primary-foreground"
+                  : "glass-card"
+              }`}
+            >
               {msg.role === "assistant" ? (
                 <div className="prose prose-sm prose-invert max-w-none">
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
@@ -125,6 +107,7 @@ const ChatPage = () => {
                 msg.content
               )}
             </div>
+
             {msg.role === "user" && (
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground mt-0.5">
                 <User className="h-4 w-4" />
@@ -132,16 +115,18 @@ const ChatPage = () => {
             )}
           </div>
         ))}
-        {isLoading && messages[messages.length - 1]?.role === "user" && (
+
+        {isLoading && (
           <div className="flex gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <Bot className="h-4 w-4" />
             </div>
+
             <div className="glass-card px-4 py-3 text-sm">
               <div className="flex gap-1">
-                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+                <span className="h-2 w-2 rounded-full bg-primary animate-bounce"></span>
+                <span className="h-2 w-2 rounded-full bg-primary animate-bounce delay-150"></span>
+                <span className="h-2 w-2 rounded-full bg-primary animate-bounce delay-300"></span>
               </div>
             </div>
           </div>
@@ -157,7 +142,13 @@ const ChatPage = () => {
           className="bg-input border-border"
           disabled={isLoading}
         />
-        <Button onClick={send} variant="glow" size="icon" disabled={isLoading || !input.trim()}>
+
+        <Button
+          onClick={send}
+          variant="glow"
+          size="icon"
+          disabled={isLoading || !input.trim()}
+        >
           <Send className="h-4 w-4" />
         </Button>
       </div>
