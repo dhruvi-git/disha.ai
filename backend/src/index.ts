@@ -60,3 +60,8 @@ const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+app.get("/test-ai", async (req, res) => {
+  const response = await generateCareerAdvice("How do I improve my resume?");
+  res.json({ response });
+});
