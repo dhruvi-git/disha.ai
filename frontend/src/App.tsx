@@ -34,10 +34,8 @@ const App = () => {
 
         <BrowserRouter>
           <Routes>
-            {/* Landing */}
             <Route path="/" element={<Index />} />
 
-            {/* Clerk Auth */}
             <Route
               path="/sign-in/*"
               element={
@@ -56,7 +54,6 @@ const App = () => {
               }
             />
 
-            {/* Protected Dashboard */}
             <Route
               path="/dashboard/*"
               element={
