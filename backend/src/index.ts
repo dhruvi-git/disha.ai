@@ -40,6 +40,21 @@ app.get("/me", requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
+import { generateCareerAdvice } from "./services/aiService";
+
+app.post("/ai/chat", requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { message } = req.body;
+
+    const response = await generateCareerAdvice(message);
+
+    res.json({ response });
+  } catch (error) {
+    console.error("AI error:", error);
+    res.status(500).json({ message: "AI request failed" });
+  }
+});
+
 const PORT = 5000;
 
 app.listen(PORT, () => {
