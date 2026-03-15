@@ -10,14 +10,14 @@ export async function generateCareerAdvice(message: string) {
       {
         role: "system",
         content:
-          "You are an AI career coach helping users improve their resumes, prepare for interviews, and plan their careers.",
+          "You are an AI career coach helping users improve resumes, prepare for interviews, and plan careers.",
       },
       {
         role: "user",
         content: message,
       },
     ],
-    model: "llama3-8b-8192",
+    model: "llama-3.1-8b-instant",
   });
 
   return completion.choices[0].message.content;
