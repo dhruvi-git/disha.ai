@@ -96,6 +96,67 @@ app.post("/ai/refine-resume", requireAuth, async (req, res) => {
   }
 });
 
+app.post("/achievements", requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { title, description, type, date } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId: req.userId! },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const achievement = await prisma.achievement.create({
+      data: {
+        title,
+        description,
+        type,
+        date: new Date(date),
+        userId: user.id,
+      },
+    });
+
+    res.json(achievement);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to create achievement" });
+  }
+});
+
+app.get("/achievements", requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { clerkId: req.userId! },
+      include: { achievements: true },
+    });
+
+    res.json(user?.achievements || []);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch achievements" });
+  }
+});
+
+app.delete("/achievements/:id", requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.achievement.delete({
+      where: { id },
+    });
+
+    res.json({ message: "Deleted" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete" });
+  }
+});
+
 const PORT = 5000;
 
 app.listen(PORT, () => {
