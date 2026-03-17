@@ -15,6 +15,7 @@ model User {
 
   profile    Profile?
   activities ActivityLog[]
+  achievements Achievement[]
 }
 
 model Profile {
@@ -37,6 +38,18 @@ model ActivityLog {
   tool      String
   action    String
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  type        String
+  date        DateTime
+  createdAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 }
