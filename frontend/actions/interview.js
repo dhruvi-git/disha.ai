@@ -2,10 +2,9 @@
 
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Groq } from "groq-sdk";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function generateQuiz() {
   const { userId } = await auth();
@@ -44,9 +43,13 @@ export async function generateQuiz() {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    const result = await groq.chat.completions.create({
+      model: "llama3-70b-8192",
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+    });
+    
+    const text = result.choices[0].message.content;
     const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
     const quiz = JSON.parse(cleanedText);
 
@@ -100,9 +103,12 @@ export async function saveQuizResult(questions, answers, score) {
     `;
 
     try {
-      const tipResult = await model.generateContent(improvementPrompt);
+      const tipResult = await groq.chat.completions.create({
+        model: "llama3-70b-8192",
+        messages: [{ role: "user", content: improvementPrompt }],
+      });
 
-      improvementTip = tipResult.response.text().trim();
+      improvementTip = tipResult.choices[0].message.content.trim();
       console.log(improvementTip);
     } catch (error) {
       console.error("Error generating improvement tip:", error);

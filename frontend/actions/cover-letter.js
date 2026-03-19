@@ -2,10 +2,9 @@
 
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Groq } from "groq-sdk";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function generateCoverLetter(data) {
   const { userId } = await auth();
@@ -44,8 +43,12 @@ export async function generateCoverLetter(data) {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const content = result.response.text().trim();
+    const result = await groq.chat.completions.create({
+      model: "llama3-70b-8192",
+      messages: [{ role: "user", content: prompt }],
+    });
+    
+    const content = result.choices[0].message.content.trim();
 
     const coverLetter = await db.coverLetter.create({
       data: {

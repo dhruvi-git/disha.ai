@@ -1,9 +1,8 @@
 import { db } from "@/lib/prisma";
 import { inngest } from "./client";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Groq } from "groq-sdk";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export const generateIndustryInsights = inngest.createFunction(
   { name: "Generate Industry Insights" },
@@ -36,15 +35,15 @@ export const generateIndustryInsights = inngest.createFunction(
           Include at least 5 skills and trends.
         `;
 
-      const res = await step.ai.wrap(
-        "gemini",
-        async (p) => {
-          return await model.generateContent(p);
-        },
-        prompt
-      );
+      const res = await step.run("groq", async () => {
+        return await groq.chat.completions.create({
+          model: "llama3-70b-8192",
+          messages: [{ role: "user", content: prompt }],
+          response_format: { type: "json_object" },
+        });
+      });
 
-      const text = res.response.candidates[0].content.parts[0].text || "";
+      const text = res.choices[0].message.content || "";
       const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
 
       const insights = JSON.parse(cleanedText);
