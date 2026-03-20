@@ -19,7 +19,7 @@ It analyzes your profile and industry to deliver tailored, actionable advice usi
 - **Styling & UI:** Tailwind CSS, Shadcn UI, Lucide React
 - **Authentication:** [Clerk](https://clerk.com/)
 - **Database & ORM:** PostgreSQL accessed via [Prisma](https://www.prisma.io/)
-- **AI Provider:** [Groq API](https://groq.com/) using the `llama3-70b-8192` model
+- **AI Provider:** [Groq API](https://groq.com/) using the `llama-3.3-70b-versatile` model
 - **Background Jobs:** [Inngest](https://www.inngest.com/)
 
 ---
