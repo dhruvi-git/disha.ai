@@ -2,63 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 0 0% 3.9%;
+    /* Deep dark background */
+    --background: 240 10% 4%; 
     --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    
+    /* Translucent dark cards for Glassmorphism */
+    --card: 240 10% 6%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+    --popover: 240 10% 6%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    
+    /* Neon Purple Primary */
+    --primary: 270 100% 60%; 
+    --primary-foreground: 0 0% 100%;
+    
+    /* Darker purple for secondary elements */
+    --secondary: 270 40% 15%; 
+    --secondary-foreground: 270 100% 80%;
+    
+    --muted: 240 10% 12%;
+    --muted-foreground: 240 5% 65%;
+    
+    --accent: 270 50% 15%;
+    --accent-foreground: 270 100% 80%;
+    
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    
+    /* Subtle purple borders */
+    --border: 270 30% 15%; 
+    --input: 240 10% 12%;
+    --ring: 270 100% 60%;
+    --radius: 1rem;
   }
 }
 
@@ -67,47 +44,31 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
   }
 }
 
 @layer utilities {
-  .gradient {
-    @apply bg-gradient-to-b from-gray-400 via-gray-200 to-gray-600;
-  }
   .gradient-title {
-    @apply gradient font-extrabold tracking-tighter text-transparent bg-clip-text pb-2 pr-2;
+    @apply font-extrabold tracking-tight text-transparent bg-clip-text pb-2;
+    background-image: linear-gradient(to right, #ffffff, #c084fc, #9333ea);
+  }
+  
+  .glass-card {
+    @apply bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] shadow-[0_4px_30px_rgba(0,0,0,0.1)];
   }
 }
 
-.hero-image-wrapper {
-  perspective: 1000px;
-}
-
-.hero-image {
-  /* transform: rotateX(20deg) scale(0.9) translateY(-50); */
-  transform: rotateX(15deg) scale(1);
-  transition: transform 0.5s ease-out;
-  will-change: transform;
-}
-
-.hero-image.scrolled {
-  transform: rotateX(0deg) scale(1) translateY(40px);
-}
-
+/* Updated Subtle Dark Grid */
 .grid-background {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.1) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background: linear-gradient(to right, rgba(147, 51, 234, 0.05) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(147, 51, 234, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
   z-index: -1;
 }
@@ -119,5 +80,19 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.9));
+  background: radial-gradient(circle at center, transparent 0%, #0a0a0c 80%);
+}
+
+/* Image Hover effects */
+.hero-image-wrapper {
+  perspective: 1000px;
+}
+.hero-image {
+  transform: rotateX(10deg) scale(0.95);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.7s ease;
+  will-change: transform;
+}
+.hero-image.scrolled {
+  transform: rotateX(0deg) scale(1);
+  box-shadow: 0 0 60px -15px rgba(147, 51, 234, 0.5);
 }
