@@ -1,137 +1,156 @@
 "use client";
 
-// Notice the change on the line below!
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { Button } from "@/components/ui/button";
-import { Send, Bot, User, Loader2 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Input } from "@/components/ui/input";
+import { Send, Bot, User } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 export default function ChatPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
-    api: "/api/chat",
-    onError: (err) => {
-      console.error("Disha API Error:", err);
-    }
+  // useChat v3+ handles messages/status; input is managed locally.
+  const { messages, sendMessage, status, error } = useChat({
+    api: "/api/chat", // This connects directly to the route.js we built earlier!
   });
+  const [input, setInput] = useState("");
+  const isLoading = status === "submitted" || status === "streaming";
 
-  // Auto-scroll to the bottom when a new message arrives
-  const messagesEndRef = useRef(null);
+  const scrollRef = useRef(null);
+
+  const getMessageText = (message) => {
+    if (typeof message?.content === "string" && message.content.length > 0) {
+      return message.content;
+    }
+
+    if (Array.isArray(message?.parts)) {
+      return message.parts
+        .filter((part) => part?.type === "text")
+        .map((part) => part.text)
+        .join("");
+    }
+
+    return "";
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const text = input.trim();
+    if (!text || isLoading) {
+      return;
+    }
+
+    setInput("");
+    await sendMessage({ text });
+  };
+
+  // Auto-scroll to the bottom when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [messages]);
 
   return (
-    <div className="container mx-auto px-4 py-8 mt-16 max-w-4xl min-h-[calc(100vh-4rem)] flex flex-col">
-      {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-          Chat with Disha
-        </h1>
-        <p className="text-slate-400">
+    <div className="flex flex-col h-[calc(100vh-6rem)] max-w-4xl mx-auto w-full p-4">
+      {/* Header */}
+      <div className="mb-4">
+        <h1 className="font-display text-2xl font-bold">Chat with Disha</h1>
+        <p className="text-sm text-muted-foreground">
           Your personalized AI career coach. Ask for resume reviews, interview tips, or career guidance.
         </p>
       </div>
 
-      {/* Chat Container */}
-      <div className="flex-1 bg-slate-950/50 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-6 flex flex-col h-[60vh] shadow-xl">
-        
-        {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto space-y-6 mb-4 pr-2">
-          {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-4">
-              <Bot className="w-12 h-12 text-purple-500/50" />
-              <p>Hi! I'm Disha. How can I help your career today?</p>
-            </div>
-          ) : (
-            messages.map((m) => (
-              <div
-                key={m.id}
-                className={`flex gap-3 ${
-                  m.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                {/* Avatar for AI */}
-                {m.role !== "user" && (
-                  <div className="w-8 h-8 rounded-full bg-purple-600/20 border border-purple-500/30 flex items-center justify-center shrink-0">
-                    <Bot className="w-4 h-4 text-purple-400" />
-                  </div>
-                )}
+      {/* Chat Area */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm space-y-4">
+             <Bot className="h-10 w-10 text-purple-500/50" />
+            <p>Hi! I'm Disha. How can I help your career today?</p>
+          </div>
+        )}
 
-                {/* Message Bubble */}
-                <div
-                  className={`px-4 py-3 rounded-2xl max-w-[85%] md:max-w-[75%] text-sm md:text-base ${
-                    m.role === "user"
-                      ? "bg-purple-600 text-white rounded-tr-sm"
-                      : "bg-slate-800/80 text-slate-200 border border-white/5 rounded-tl-sm"
-                  }`}
-                >
-                  {m.content}
+        {messages.map((msg, i) => {
+          const messageText = getMessageText(msg);
+
+          return (
+          <div key={msg.id || i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
+            {msg.role === "assistant" && (
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-500/10 text-purple-500 mt-0.5">
+                <Bot className="h-4 w-4" />
+              </div>
+            )}
+
+            <div
+              className={`max-w-[80%] rounded-xl px-4 py-3 text-sm ${
+                msg.role === "user"
+                  ? "bg-purple-600 text-white"
+                  : "bg-slate-800 border border-slate-700 text-slate-200"
+              }`}
+            >
+              {msg.role === "assistant" ? (
+                <div className="prose prose-sm prose-invert max-w-none">
+                  <ReactMarkdown>{messageText}</ReactMarkdown>
                 </div>
+              ) : (
+                messageText
+              )}
+            </div>
 
-                {/* Avatar for User */}
-                {m.role === "user" && (
-                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
-                    <User className="w-4 h-4 text-slate-300" />
-                  </div>
-                )}
+            {msg.role === "user" && (
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-700 text-white mt-0.5">
+                <User className="h-4 w-4" />
               </div>
-            ))
-          )}
-          
-          {/* Loading Indicator */}
-          {isLoading && (
-            <div className="flex gap-3 justify-start">
-              <div className="w-8 h-8 rounded-full bg-purple-600/20 border border-purple-500/30 flex items-center justify-center shrink-0">
-                <Bot className="w-4 h-4 text-purple-400" />
-              </div>
-              <div className="px-4 py-3 rounded-2xl bg-slate-800/80 border border-white/5 text-slate-400 flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Thinking...
+            )}
+          </div>
+        )})}
+
+        {/* Loading Animation */}
+        {isLoading && (
+          <div className="flex gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-500/10 text-purple-500">
+              <Bot className="h-4 w-4" />
+            </div>
+            <div className="bg-slate-800 border border-slate-700 px-4 py-3 text-sm rounded-xl">
+              <div className="flex gap-1 items-center h-full">
+                <span className="h-2 w-2 rounded-full bg-purple-500 animate-bounce"></span>
+                <span className="h-2 w-2 rounded-full bg-purple-500 animate-bounce delay-150" style={{ animationDelay: '150ms' }}></span>
+                <span className="h-2 w-2 rounded-full bg-purple-500 animate-bounce delay-300" style={{ animationDelay: '300ms' }}></span>
               </div>
             </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+          </div>
+        )}
 
-        {/* Input Area */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault(); // Stop the page from refreshing
-            console.log("1. Form submitted! Input is:", input);
-            try {
-              handleSubmit(e); // Send to AI SDK
-              console.log("2. handleSubmit fired successfully");
-            } catch (err) {
-              console.error("3. Crash in handleSubmit:", err);
-            }
-          }}
-          className="relative flex items-center mt-auto"
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Type your message..."
-            className="w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-4 pr-14 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-            disabled={isLoading}
-          />
-          <Button
-            type="submit"
-            disabled={isLoading || !input?.trim()}
-            size="icon"
-            className="absolute right-2 bg-purple-600 hover:bg-purple-700 h-8 w-8 rounded-lg transition-all"
-            onClick={(e) => {
-              // Fallback just in case the button click isn't triggering the form
-              if (input?.trim()) {
-                console.log("Button clicked directly!");
-              }
-            }}
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </form>
-
+        {/* Error Display */}
+        {error && (
+          <div className="text-red-400 bg-red-950/50 border border-red-900/50 p-3 rounded-xl text-sm text-center">
+            Connection error: {error.message}
+          </div>
+        )}
       </div>
+
+      {/* Input Area */}
+      {/* Wrapping this in a <form> is the magic trick that makes the Enter key work! */}
+      <form onSubmit={handleSubmit} className="flex gap-2">
+        <Input
+          placeholder="Ask about careers, interviews, resumes..."
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          className="bg-slate-900 border-slate-700 flex-1 focus-visible:ring-purple-500"
+          disabled={isLoading}
+        />
+
+        <Button
+          type="submit"
+          disabled={isLoading || !input?.trim()}
+          className="bg-purple-600 hover:bg-purple-700 w-10 px-0"
+        >
+          <Send className="h-4 w-4" />
+        </Button>
+      </form>
     </div>
   );
 }
