@@ -1,4 +1,4 @@
-import { streamText } from 'ai';
+import { convertToModelMessages, streamText } from 'ai';
 import { createGroq } from '@ai-sdk/groq'; 
 import { currentUser } from '@clerk/nextjs/server';
 import { db } from '@/lib/prisma'; // Adjust based on your db import
@@ -10,7 +10,7 @@ const groq = createGroq({
 
 export async function POST(req) {
   try {
-    const { messages } = await req.json();
+    const { messages = [] } = await req.json();
     const user = await currentUser();
 
     if (!user) {
@@ -41,6 +41,8 @@ export async function POST(req) {
         ? userProfile.assessments.map(a => `${a.category} Score: ${a.quizScore}%`).join(' | ')
         : "No assessments taken yet.";
 
+    const modelMessages = await convertToModelMessages(messages);
+
     // 2. AUGMENTATION: Build the highly personalized system prompt
     // Updated to reference your specific schema fields (like resume.content instead of summary)
     const systemPrompt = `
@@ -68,10 +70,10 @@ export async function POST(req) {
     const result = streamText({
       model: groq('llama-3.1-8b-instant'), // Groq's lightning-fast Llama 3.1 model
       system: systemPrompt,
-      messages,
+      messages: modelMessages,
     });
 
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
     
   } catch (error) {
     console.error("Chat API Error:", error);
