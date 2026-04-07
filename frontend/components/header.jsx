@@ -7,6 +7,7 @@ import {
   GraduationCap,
   ChevronDown,
   StarsIcon,
+  Bot, // Added Bot icon import here!
 } from "lucide-react";
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
@@ -83,6 +84,12 @@ export default async function Header() {
                   <Link href="/interview" className="flex items-center gap-2">
                     <GraduationCap className="h-4 w-4" />
                     Interview Prep
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="hover:bg-purple-500/20 focus:bg-purple-500/20 cursor-pointer">
+                  <Link href="/chat" className="flex items-center gap-2">
+                    <Bot className="h-4 w-4" />
+                      Chat with Disha
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
