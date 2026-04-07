@@ -10,6 +10,8 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^3.0.34",
+    "@ai-sdk/react": "^3.0.151",
     "@clerk/nextjs": "^6.9.10",
     "@clerk/themes": "^2.2.5",
     "@hookform/resolvers": "^3.10.0",
@@ -25,6 +27,7 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.2",
     "@uiw/react-md-editor": "^4.0.5",
+    "ai": "^6.0.149",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
