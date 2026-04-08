@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -63,14 +63,6 @@ export default function ResumeBuilder({ initialContent }) {
     if (initialContent) setActiveTab("preview");
   }, [initialContent]);
 
-  // Update preview content when form values change
-  useEffect(() => {
-    if (activeTab === "edit") {
-      const newContent = getCombinedContent();
-      setPreviewContent(newContent ? newContent : initialContent);
-    }
-  }, [formValues, activeTab]);
-
   // Handle save result
   useEffect(() => {
     if (saveResult && !isSaving) {
@@ -81,7 +73,7 @@ export default function ResumeBuilder({ initialContent }) {
     }
   }, [saveResult, saveError, isSaving]);
 
-  const getContactMarkdown = () => {
+  const getContactMarkdown = useCallback(() => {
     const { contactInfo } = formValues;
     const parts = [];
     if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
@@ -94,9 +86,9 @@ export default function ResumeBuilder({ initialContent }) {
       ? `## <div align="center">${user.fullName}</div>
         \n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`
       : "";
-  };
+  }, [formValues, user.fullName]);
 
-  const getCombinedContent = () => {
+  const getCombinedContent = useCallback(() => {
     const { summary, skills, experience, education, projects } = formValues;
     return [
       getContactMarkdown(),
@@ -108,7 +100,15 @@ export default function ResumeBuilder({ initialContent }) {
     ]
       .filter(Boolean)
       .join("\n\n");
-  };
+  }, [formValues, getContactMarkdown]);
+
+  // Update preview content when form values change
+  useEffect(() => {
+    if (activeTab === "edit") {
+      const newContent = getCombinedContent();
+      setPreviewContent(newContent ? newContent : initialContent);
+    }
+  }, [activeTab, formValues, getCombinedContent, initialContent]);
 
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -132,7 +132,7 @@ export default function ResumeBuilder({ initialContent }) {
     }
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
     try {
       const formattedContent = previewContent
         .replace(/\n/g, "\n") // Normalize newlines
