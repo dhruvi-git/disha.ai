@@ -7,7 +7,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 export const generateIndustryInsights = inngest.createFunction(
   { name: "Generate Industry Insights" },
   { cron: "0 0 * * 0" }, // Run every Sunday at midnight
-  async ({ event, step }) => {
+  async ({ step }) => {
     const industries = await step.run("Fetch industries", async () => {
       return await db.industryInsight.findMany({
         select: { industry: true },
