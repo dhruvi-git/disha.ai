@@ -69,7 +69,7 @@ export default function ChatPage() {
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm space-y-4">
              <Bot className="h-10 w-10 text-purple-500/50" />
-            <p>Hi! I'm Disha. How can I help your career today?</p>
+            <p>Hi! I&apos;m Disha. How can I help your career today?</p>
           </div>
         )}
 
