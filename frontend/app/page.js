@@ -62,25 +62,29 @@ export default function LandingPage() {
             viewport={{ once: true, margin: "-100px" }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto"
           >
-            {features.map((feature, index) => (
-              <motion.div key={index} variants={itemVariants}>
-                <Card
-                  className="glass-card bg-slate-900/50 border-white/5 hover:border-purple-500/50 transition-all duration-500 group overflow-hidden relative h-full"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  <CardContent className="pt-8 text-left relative z-10">
-                    <div className="mb-6 w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 border border-purple-500/30 shadow-[0_0_15px_rgba(147,51,234,0.2)]">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3 text-white group-hover:text-purple-300 transition-colors">{feature.title}</h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            {features.map((feature, index) => {
+              const FeatureIcon = feature.icon;
+
+              return (
+                <motion.div key={index} variants={itemVariants}>
+                  <Card
+                    className="glass-card bg-slate-900/50 border-white/5 hover:border-purple-500/50 transition-all duration-500 group overflow-hidden relative h-full"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <CardContent className="pt-8 text-left relative z-10">
+                      <div className="mb-6 w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 border border-purple-500/30 shadow-[0_0_15px_rgba(147,51,234,0.2)]">
+                        <FeatureIcon className="h-6 w-6" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-3 text-white group-hover:text-purple-300 transition-colors">{feature.title}</h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
@@ -134,22 +138,26 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto"
           >
-            {howItWorks.map((item, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                className="flex flex-col items-center text-center p-6 glass-card bg-slate-900/30 rounded-2xl border border-white/5 hover:border-purple-500/30 transition-colors"
-              >
-                <div className="text-5xl font-black text-white/5 mb-4 relative">
-                  0{index + 1}
-                  <div className="absolute inset-0 flex items-center justify-center text-purple-400 text-xl drop-shadow-[0_0_10px_rgba(147,51,234,0.5)]">
-                    {item.icon}
+            {howItWorks.map((item, index) => {
+              const StepIcon = item.icon;
+
+              return (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  className="flex flex-col items-center text-center p-6 glass-card bg-slate-900/30 rounded-2xl border border-white/5 hover:border-purple-500/30 transition-colors"
+                >
+                  <div className="text-5xl font-black text-white/5 mb-4 relative">
+                    0{index + 1}
+                    <div className="absolute inset-0 flex items-center justify-center text-purple-400 text-xl drop-shadow-[0_0_10px_rgba(147,51,234,0.5)]">
+                      <StepIcon className="h-6 w-6" />
+                    </div>
                   </div>
-                </div>
-                <h3 className="font-semibold text-lg text-white mb-2">{item.title}</h3>
-                <p className="text-sm text-gray-400">{item.description}</p>
-              </motion.div>
-            ))}
+                  <h3 className="font-semibold text-lg text-white mb-2">{item.title}</h3>
+                  <p className="text-sm text-gray-400">{item.description}</p>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
