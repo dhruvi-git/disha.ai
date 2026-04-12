@@ -26,10 +26,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 
 const DashboardView = ({ insights }) => {
-  // Transform salary data for the chart
   const salaryData = insights.salaryRanges.map((range) => ({
     name: range.role,
     min: range.min / 1000,
@@ -76,9 +77,53 @@ const DashboardView = ({ insights }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <Badge variant="outline">Last updated: {lastUpdatedDate}</Badge>
+        <Badge variant="outline">Insights last updated: {lastUpdatedDate}</Badge>
       </div>
 
+      {/* App Features Quick Links */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold tracking-tight mb-4">Your AI Career Coach Toolkit</h2>
+        <p className="text-muted-foreground mb-6">Explore the tailored tools designed to secure your competitive edge in the evolving job market.</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="hover:border-purple-500/50 transition-colors">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">AI Resume Tailor</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">Dynamically analyze and rewrite your resume against any target Job Description.</p>
+              <Link href="/resume">
+                <Button variant="outline" className="w-full">Optimize Resume</Button>
+              </Link>
+            </CardContent>
+          </Card>
+          
+          <Card className="hover:border-purple-500/50 transition-colors">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Cover Letter Generator</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">Instantly draft personalized cover letters highlighting your exact strengths.</p>
+              <Link href="/ai-cover-letter">
+                <Button variant="outline" className="w-full">Draft Letter</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:border-purple-500/50 transition-colors">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">AI Mock Interviews</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">Practice with dynamic, industry-specific questions grading your responses.</p>
+              <Link href="/interview">
+                <Button variant="outline" className="w-full">Start Practice</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <h2 className="text-2xl font-bold tracking-tight mt-10 mb-4">Global Industry Insights</h2>
       {/* Market Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>

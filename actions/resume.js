@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { Groq } from "groq-sdk";
 import { revalidatePath } from "next/cache";
+import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -98,3 +99,60 @@ export async function improveWithAI({ current, type }) {
     throw new Error("Failed to improve content");
   }
 }
+
+export async function tailorResumeWithAI(formData) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+  
+  const file = formData.get("file");
+  const jobDescription = formData.get("jobDescription");
+  
+  if (!file || !jobDescription) {
+    throw new Error("Missing file or job description");
+  }
+
+  let resumeText = "";
+  try {
+    if (file.type === "application/pdf") {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = new Uint8Array(arrayBuffer);
+      const data = await pdfParse(buffer);
+      resumeText = data.text;
+    } else {
+      resumeText = await file.text();
+    }
+  } catch (err) {
+    console.error("File parsing error:", err);
+    throw new Error(`Failed to parse the uploaded file: ${err.message}`);
+  }
+
+  const prompt = `
+    You are an expert ATS resume reviewer and career coach. Review the provided resume against the given Job Description.
+    Output a strictly valid JSON object with the following structure:
+    {
+      "atsScore": (number from 0 to 100 representing how well the resume matches the JD),
+      "feedback": (array of 3-5 string tips detailing what exact keywords or experiences are missing or could be phrased better based on the JD),
+      "optimizedContent": (the entire rewritten resume formatted in clean Markdown, optimizing the content to better match the exact requirements of the JD. Please ensure you keep the user's essential contact info, modify bullet points to add impactful metrics, and rewrite the professional summary, matching the tone and keywords of the JD.)
+    }
+
+    Job Description:
+    ${jobDescription}
+
+    Resume:
+    ${resumeText}
+  `;
+
+  try {
+    const result = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+    });
+    
+    return JSON.parse(result.choices[0].message.content);
+  } catch (error) {
+    console.error("Error tailoring resume:", error);
+    throw new Error("Failed to tailor resume with AI");
+  }
+}
+

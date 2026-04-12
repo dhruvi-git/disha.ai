@@ -15,7 +15,7 @@ It analyzes your profile and industry to deliver tailored, actionable advice usi
 
 ## 🛠 Tech Stack
 
-- **Framework:** [Next.js (App Router)](https://nextjs.org/) (Located in the `frontend/` directory)
+- **Framework:** [Next.js 15 (App Router)](https://nextjs.org/)
 - **Styling & UI:** Tailwind CSS, Shadcn UI, Lucide React
 - **Authentication:** [Clerk](https://clerk.com/)
 - **Database & ORM:** PostgreSQL accessed via [Prisma](https://www.prisma.io/)
@@ -28,11 +28,13 @@ It analyzes your profile and industry to deliver tailored, actionable advice usi
 
 ```text
 disha.ai/
-├── frontend/        # Next.js Full-Stack Application (App Router, Server Actions, UI)
-└── backend/         # Reserved for future decoupled APIs / microservices 
+├── app/             # Next.js App Router (UI, Routes, Server Actions)
+├── components/      # React Components (UI, Layout)
+├── prisma/          # Database Schema
+└── public/          # Static Assets
 ```
 
-The core application currently lives entirely inside the `frontend/` folder, utilizing Next.js server actions to talk to the database and Groq.
+The core application is a complete Next.js Full-Stack application, utilizing server actions to talk to the database and Groq.
 
 ---
 
@@ -46,12 +48,12 @@ The core application currently lives entirely inside the `frontend/` folder, uti
 ### 1. Clone & Install
 ```bash
 git clone https://github.com/dhruvi-git/disha.ai.git
-cd disha.ai/frontend
+cd disha.ai
 npm install
 ```
 
 ### 2. Configure Environment Variables
-Create a `.env` file inside the `frontend/` directory with the following variables:
+Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Database Configuration
@@ -85,7 +87,7 @@ npm run dev
 The app will be available at [http://localhost:3000](http://localhost:3000).
 
 *(Optional) Start the Inngest Dev Server to test background jobs:*
-Open a new terminal, navigate to `frontend/`, and run:
+Open a new terminal, navigate to the project root, and run:
 ```bash
 npx inngest-cli@latest dev
 ```

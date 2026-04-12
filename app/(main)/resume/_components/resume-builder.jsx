@@ -48,7 +48,7 @@ import { Input } from "@/components/ui/input";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { saveResume } from "@/actions/resume";
+import { saveResume, tailorResumeWithAI } from "@/actions/resume";
 
 import { EntryForm } from "./entry-form";
 
@@ -76,10 +76,7 @@ export default function ResumeBuilder({ initialContent }) {
 
 
 
-  // --- AI TAILOR STATE ---
-
   const [file, setFile] = useState(null);
-
   const [jobDescription, setJobDescription] = useState("");
 
   const [isTailoring, setIsTailoring] = useState(false);
@@ -138,8 +135,6 @@ export default function ResumeBuilder({ initialContent }) {
 
 
 
-  // Watch form fields for preview updates
-
   const formValues = watch();
 
 
@@ -151,8 +146,6 @@ export default function ResumeBuilder({ initialContent }) {
   }, [initialContent]);
 
 
-
-  // Update preview content when form values change
 
   useEffect(() => {
 
@@ -167,8 +160,6 @@ export default function ResumeBuilder({ initialContent }) {
   }, [formValues, activeTab]);
 
 
-
-  // Handle save result
 
   useEffect(() => {
 
@@ -344,33 +335,11 @@ export default function ResumeBuilder({ initialContent }) {
 
 
 
-      // TODO: Replace with actual Server Action call
+      const result = await tailorResumeWithAI(formData);
 
-      setTimeout(() => {
-
-        setTailorResult({
-
-          atsScore: 78,
-
-          feedback: [
-
-            "Missing keyword: 'Docker'. The JD mentions this 3 times.",
-
-            "Reframed your software engineer role to highlight leadership qualities.",
-
-            "Updated summary to match the tone of the target company."
-
-          ],
-
-          optimizedContent: "## Optimized Resume Mock Data\n\nThis is where the AI's rewritten markdown will appear once the backend is hooked up."
-
-        });
-
-        toast.success("Resume tailored successfully!");
-
-        setIsTailoring(false);
-
-      }, 3000);
+      setTailorResult(result);
+      toast.success("Resume tailored successfully!");
+      setIsTailoring(false);
 
 
 

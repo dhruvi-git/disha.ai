@@ -42,7 +42,7 @@ export default function LandingPage() {
       {/* Features Section */}
       <section className="w-full py-20 lg:py-32 relative z-10">
         <div className="container mx-auto px-4 md:px-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -51,11 +51,11 @@ export default function LandingPage() {
           >
             <h2 className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-2">Features</h2>
             <h3 className="text-3xl md:text-4xl font-bold">
-              Accelerate your growth using <br className="hidden md:block"/> streamlined AI processes.
+              Accelerate your growth using <br className="hidden md:block" /> streamlined AI processes.
             </h3>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -71,7 +71,7 @@ export default function LandingPage() {
                     className="glass-card bg-slate-900/50 border-white/5 hover:border-purple-500/50 transition-all duration-500 group overflow-hidden relative h-full"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
+
                     <CardContent className="pt-8 text-left relative z-10">
                       <div className="mb-6 w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 border border-purple-500/30 shadow-[0_0_15px_rgba(147,51,234,0.2)]">
                         <FeatureIcon className="h-6 w-6" />
@@ -92,7 +92,7 @@ export default function LandingPage() {
       {/* Stats Section */}
       <section className="w-full py-16 border-y border-white/5 bg-slate-950/50 backdrop-blur-lg relative z-10">
         <div className="container mx-auto px-4 md:px-6">
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -119,7 +119,7 @@ export default function LandingPage() {
       {/* How It Works Section */}
       <section className="w-full py-24 relative z-10">
         <div className="container mx-auto px-4 md:px-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -131,7 +131,7 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -165,7 +165,7 @@ export default function LandingPage() {
       {/* FAQ Section */}
       <section className="w-full py-24 bg-slate-950/80 relative z-10">
         <div className="container mx-auto px-4 md:px-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -175,7 +175,7 @@ export default function LandingPage() {
             <p className="text-gray-400">Everything you need to know about our AI platform.</p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -201,8 +201,8 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="w-full py-24 relative z-10 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-purple-600 rounded-full blur-[150px] opacity-20 pointer-events-none"></div>
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -211,7 +211,7 @@ export default function LandingPage() {
         >
           <div className="glass-card bg-slate-900/80 backdrop-blur-xl rounded-3xl p-12 md:p-20 text-center max-w-4xl mx-auto border border-purple-500/30 shadow-[0_0_50px_rgba(147,51,234,0.1)]">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-              Start Your Career <br/>
+              Start Your Career <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Journey Today</span>
             </h2>
             <p className="mx-auto max-w-2xl text-gray-400 mb-10 text-lg">

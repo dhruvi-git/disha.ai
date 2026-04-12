@@ -57,12 +57,6 @@ export default function Hero() {
           >
             Get Started Now
           </Link>
-          <Link 
-            href="/demo" 
-            className="px-8 py-4 rounded-xl bg-slate-900 border border-slate-700 hover:border-purple-500 hover:bg-slate-800 text-white font-semibold transition-all"
-          >
-            Watch Demo
-          </Link>
         </motion.div>
       </div>
 
